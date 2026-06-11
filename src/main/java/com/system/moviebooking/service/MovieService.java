@@ -24,4 +24,21 @@ public class MovieService {
     public Movie getMovieById(String id){
         return movieRepository.findById(id).orElse(null);
     }
+
+    public Movie updateMovie(String id, Movie updatedMovie) {
+        Movie movie = movieRepository.findById(id).orElse(null);
+
+        if (movie != null) {
+            movie.setTitle(updatedMovie.getTitle());
+            movie.setAvailableSeats(updatedMovie.getAvailableSeats());
+            movie.setPrice(updatedMovie.getPrice());
+            return movieRepository.save(movie);
+        }
+
+        return null;
+    }
+    public String deleteMovie(String id) {
+        movieRepository.deleteById(id);
+        return "Movie deleted successfully";
+    }
 }
