@@ -23,4 +23,6 @@ public class Movie {
     private int price;
 
     private String location;
+
+    private int availableSeats; 
 }

@@ -24,6 +24,15 @@ public class BookingService {
     public Booking createBooking(String userId,String movieId, int seats){
         Movie movie =  movieRepository.findById(movieId).orElseThrow(()->new RuntimeException("Movie Not Found"));
         Booking booking =  new Booking();
+
+        if(movie.getAvailableSeats() < seats){
+            throw new RuntimeException("Seats Not Available");
+        }
+
+        movie.setAvailableSeats(movie.getAvailableSeats() - seats);
+
+        movieRepository.save(movie);
+
         booking.setBookingId(UUID.randomUUID().toString());
         booking.setUserId(userId);
         booking.setMovieId(movieId);
@@ -37,13 +46,16 @@ public class BookingService {
     }
 
     public Booking cancelBooking(String bookId){
-        Booking booking = bookingRepository.findById(bookId)
-                .orElseThrow(() -> new RuntimeException("Booking Not Found"));
+        Booking booking = bookingRepository.findById(bookId).orElseThrow(() -> new RuntimeException("Booking Not Found"));
+        Movie movie = movieRepository.findById(booking.getMovieId()).orElseThrow(() -> new RuntimeException("Movie Not Found"));
+        movie.setAvailableSeats(movie.getAvailableSeats() + booking.getSeats());
+        movieRepository.save(movie);
 
-        int refundAmount = booking.getTotalAmount() / 2;
+        int refundAmount = booking.getTotalAmount()/2;
 
         booking.setTotalAmount(refundAmount);
         booking.setBookingStatus(CANCELLED);
+
         return bookingRepository.save(booking);
     }
 }
