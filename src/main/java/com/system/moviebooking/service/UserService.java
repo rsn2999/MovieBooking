@@ -18,9 +18,7 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public User addUserDetails(User user) {
-
         user.setUserPwd(passwordEncoder.encode(user.getUserPwd()));
-
         return userRepository.save(user);
     }
 
